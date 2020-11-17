@@ -19,11 +19,27 @@
 int main(int ac, char *av[]){
   int i;
   
-  for (i = 0; i < N; i++){
-    fork();
-    //system("ls");
-  }
-  printf("oui\n");
+ int pid[2];
 
+ 
+
+for (int i = 0 ; i < N ; i++) {
+  switch(pid[i] = fork()) {
+    case -1:
+      printf("Erreur fork\n");
+      exit(-1);
+    case 0:
+      printf("Coucou\n");
+      break;
+    default:
+      break;
+  }
+}
+int cr;
+
+while (wait(&cr) != -1) 
+  if (cr != 0) 
+    for (i = 0 ; i < N ; i++)
+      kill(pid[i], SIGQUIT);
 
 }
