@@ -21,7 +21,7 @@ int main(int ac, char *av[]){
   int pid[2];
 
   if ( ac != 3 ){
-    fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0])  
+    fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
     exit(−1);
   }
   sscanf(av[1], "%d", &K);
