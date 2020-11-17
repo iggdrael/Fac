@@ -25,12 +25,12 @@ int main(int ac, char *av[]){
  
  execlp("ls", "ls", NULL);
  
- printf("\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n);
+ printf("\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n");
  
  printf("2: %d\n", gettimeofday(&t1,NULL));
  printf("2: %ld\n", t2.tv_usec);
         
- printf("\n\nzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\n\n);
+ printf("\n\nzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\n\n");
 
 
 
