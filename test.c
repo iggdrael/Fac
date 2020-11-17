@@ -155,5 +155,3 @@ main (int argc, char **argv)
   return status;
 }
 
-
-Pour tout commentaire : Alexandre Sedoglavic.
