@@ -57,7 +57,7 @@ int i = 0;
               gettimeofday(&t1,NULL);
 
               for(int k = 0;k<nombre_de_fois;k++){
-                  exec(c);
+                  execlp(c,c,NULL);
              }
 
              gettimeofday(&t2,NULL);
