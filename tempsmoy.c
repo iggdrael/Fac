@@ -79,7 +79,7 @@ int main(int ac,char *av[]){
                exit(0);
 
 
-        default :
+        default :break;
              // close(1);
 
             //  read(tube[0],&lireresultat,10);
