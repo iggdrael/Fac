@@ -23,7 +23,7 @@ int main(int ac, char *av[]){
  printf("1: %d\n", gettimeofday(&t1,NULL));
  printf("1: %ld\n", t1.tv_usec);
  
- execlp("ls", "ls", NULL);
+ execl("/usr/bin/ls", "/usr/bin/ls", NULL);
  
  
  printf("2: %d\n", gettimeofday(&t2,NULL));
