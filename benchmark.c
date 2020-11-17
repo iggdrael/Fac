@@ -14,7 +14,7 @@
 
 int K;
 int N;
-#define C "ls"
+char C[50];
 
 int main(int ac, char *av[]){
   int i;
@@ -25,11 +25,11 @@ int main(int ac, char *av[]){
     exit(STOP);
   }
   sscanf(av[1], "%d", &K);
-  //sscanf(av[2], "%s", C);
-  sscanf(av[2], "%d", &N);
+  sscanf(av[2], "%s", C);
+  sscanf(av[3], "%d", &N);
 
   for (int i = 0 ; i < N ; i++) {
-    switch(pid[i] = fork()) {
+    switch(fork()) {
       case -1:
         printf("Erreur fork\n");
         exit(STOP);
