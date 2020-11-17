@@ -39,6 +39,7 @@ int main(int ac, char *av[]){
       default:
         break;
     }
+    kill(getpid(), SIGQUIT);
   }
 /*
   int cr;
