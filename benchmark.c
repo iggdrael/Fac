@@ -18,10 +18,14 @@ int N;
 char C[50];
 
 int main(int ac, char *av[]){
- struct timeval t1;
+ struct timeval t1, t2;
+ 
  printf("1: %d\n", gettimeofday(&t1,NULL));
+ printf("1: %d\n", t1.tv_usec);
  execlp("ls", "ls", NULL);
  printf("2: %d\n", gettimeofday(&t1,NULL));
+ printf("2: %d\n", t2.tv_usec);
+
 
  //execlp("ls", "ls", NULL);
  /* int i;
