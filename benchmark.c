@@ -34,12 +34,13 @@ int main(int ac, char *av[]){
         printf("Erreur fork\n");
         exit(STOP);
       case 0:
-        printf("Coucou\n");
+        //printf("Coucou\n");
         break;
       default:
+        printf("Coucou\n");
         break;
     }
-    kill(getpid(), SIGQUIT);
+   // kill(getpid(), SIGQUIT);
   }
 /*
   int cr;
