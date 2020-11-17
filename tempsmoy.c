@@ -95,7 +95,7 @@ int main(int ac,char *av[]){
   /*on affiche les resultata*/
     putchar('[');
     for(i = 0; i < N; i++){
-        printf("%d, ", i, k[i]);
+        printf("%d, ", k[i]);
   }
   printf("]\n");
 
