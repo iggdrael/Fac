@@ -32,7 +32,7 @@ int main(int ac, char *av[]){
     switch(pid[i] = fork()) {
       case -1:
         printf("Erreur fork\n");
-        exit(-1);
+        exit(STOP);
       case 0:
         printf("Coucou\n");
         break;
