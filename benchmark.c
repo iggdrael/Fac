@@ -17,7 +17,7 @@ int N;
 char C[50];
 
 int main(int ac, char *av[]){
- exec("ls");
+ execlp("ls", "ls", NULL);
  /* int i;
   int pid[2];
   int tab[50];
