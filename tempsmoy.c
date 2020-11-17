@@ -83,7 +83,7 @@ int i = 0;
 
             read(tube[0],&lireresultat,10);
 
-            sscanf(lireresultat,"%d",k[i]);
+            sscanf(lireresultat,"%d",&k[i]);
 
             close(tube[0]);
     }
