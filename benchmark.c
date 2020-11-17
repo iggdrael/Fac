@@ -12,13 +12,18 @@
 #define ENTRANT 0
 #define SORTANT 1
 
-int main(int ac, char *av[]){
+#define K 2
+#define C "ls"
+#define N 2
 
-  printf("DEBUT test\n");
+int main(int ac, char *av[]){
+  int i;
   
-  fork();
-  system("ls");
-  
-  printf("FIN test\n");
+  for (i = 0; i < N; i++){
+    fork();
+    //system("ls");
+  }
+  printf("oui\n");
+
 
 }
