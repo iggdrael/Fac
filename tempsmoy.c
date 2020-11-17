@@ -55,13 +55,14 @@ int main(int ac,char *av[]){
         /*case de fils*/
         case 0:
 
-              //  gettimeofday(&t1,NULL);
+               gettimeofday(&t1,NULL);
 
                 for(int k = 0;k<K;k++){
                     execlp(C,C,NULL);
                }
 
-           //    gettimeofday(&t2,NULL);
+               gettimeofday(&t2,NULL);
+               printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
 
           //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
