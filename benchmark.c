@@ -20,7 +20,7 @@ int main(int ac, char *av[]){
   int i;
   int pid[2];
 
-  if ( ac != 3 ){
+  if ( ac != 4 ){
     fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
     exit(STOP);
   }
