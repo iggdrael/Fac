@@ -42,6 +42,9 @@ int main(int ac, char *av[]){
   
   int cr;
   while (wait(&cr) != -1)  
-      for (i = 0 ; i < N ; i++)
+      for (i = 0 ; i < N ; i++){
         tab[i] = cr;
+        printf("%d ", tab[i]);
+      }
+  putchar('\n');
 }
