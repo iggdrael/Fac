@@ -14,19 +14,19 @@
 
 int K;
 int N;
-char C[50];
+#define C "ls"
 
 int main(int ac, char *av[]){
   int i;
   int pid[2];
 
-  if ( ac != 4 ){
+  if ( ac != 3 ){
     fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
     exit(STOP);
   }
   sscanf(av[1], "%d", &K);
-  sscanf(av[2], "%s", C);
-  sscanf(av[3], "%d", &N);
+  //sscanf(av[2], "%s", C);
+  sscanf(av[2], "%d", &N);
 
   for (int i = 0 ; i < N ; i++) {
     switch(pid[i] = fork()) {
