@@ -44,9 +44,6 @@ struct timeval t1,t2;
 
 double timeuse;
 
-  char *c = malloc(sizeof(argc[2]));
-  strcpy(c,argc[2]);
-
 int i = 0;
 
   for(;i < N;i++){
@@ -60,7 +57,7 @@ int i = 0;
               gettimeofday(&t1,NULL);
 
               for(int k = 0;k<K;k++){
-                  execlp(c,c,NULL);
+                  execlp(C,C,NULL);
              }
 
              gettimeofday(&t2,NULL);
@@ -86,7 +83,7 @@ int i = 0;
 
             read(tube[0],&lireresultat,10);
 
-            sscanf(lireresultat,"%2lf",k[i]);
+            sscanf(lireresultat,"%d",k[i]);
 
             close(tube[0]);
     }
@@ -108,7 +105,7 @@ double change;
 
 /*on affiche les resultata*/
   for(i = 0;i < N-1;i++){
-      printf("le process %d coute %f microsecond \n",i,k[i]);
+      printf("le process %d coute %d microsecond \n",i,k[i]);
 }
 
   return 0;
