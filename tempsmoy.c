@@ -8,21 +8,19 @@
 #include <sys/time.h>
 
 
-#include <sys/ipc.h>
-#include <sys/sem.h>
-
-
 int main(int argv,char *argc[]){
 
-  if(argv != 4){
-    printf("nombre de parametres pas bonne,il doit est 4");
+  int K;
+  int N;
+  char C[50];
+  
+  if ( ac != 4 ){
+    fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
+    exit(STOP);
   }
-
-/*cest nombre de fois d'execution de commande*/
-  int nombre_de_fois = atoi(argc[1]);
-
-  /*cest le nombre de process de fils*/
-   int nombre_de_fils = atoi(argc[3]);
+  sscanf(av[1], "%d", &K);
+  sscanf(av[2], "%s", C);
+  sscanf(av[3], "%d", &N);
 
 /*creer le pipe*/
 int tube[2];
@@ -32,7 +30,7 @@ pipe(tube);
 char lireresultat[10];
 
 /*creer le tableau de resultat*/
-double *k = malloc(sizeof(double)*nombre_de_fils);
+double *k = malloc(sizeof(double)*N);
 
 /*string for mettre le */
 char times[10];
@@ -46,7 +44,7 @@ double timeuse;
 
 int i = 0;
 
-  for(;i < nombre_de_fils;i++){
+  for(;i < N;i++){
     switch(fork()){
       /*case de erreir*/
       case -1:printf("prob de fork");exit(0);
@@ -56,7 +54,7 @@ int i = 0;
 
               gettimeofday(&t1,NULL);
 
-              for(int k = 0;k<nombre_de_fois;k++){
+              for(int k = 0;k<K;k++){
                   execlp(c,c,NULL);
              }
 
@@ -64,7 +62,7 @@ int i = 0;
 
             timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
-            timeuse/=nombre_de_fois;//calculer le temps moyen
+            timeuse/=K;//calculer le temps moyen
 
             sprintf(times,"%2lf",timeuse);
 
@@ -93,8 +91,8 @@ int i = 0;
 double change;
 
 /*on mettre le sequence en croissante*/
-  for(i = 0;i < nombre_de_fils-1;i++){
-    for(int j = i+1;j < nombre_de_fils;j++){
+  for(i = 0;i < N-1;i++){
+    for(int j = i+1;j < N;j++){
         if(k[i] < k[j]){
           change = k[i];
           k[i] = k[j];
@@ -104,7 +102,7 @@ double change;
   }
 
 /*on affiche les resultata*/
-  for(i = 0;i < nombre_de_fils-1;i++){
+  for(i = 0;i < N-1;i++){
       printf("le process %d coute %f microsecond \n",i,k[i]);
 }
   free(k);
