@@ -7,8 +7,13 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+#define ECHEC -1
+#define SUCCES 0
+#define STOP  -1
+#define ENTRANT 0
+#define SORTANT 1
 
-int main(int argv,char *argc[]){
+int main(int ac,char *av[]){
 
   int K;
   int N;
@@ -30,7 +35,7 @@ pipe(tube);
 char lireresultat[10];
 
 /*creer le tableau de resultat*/
-double *k = malloc(sizeof(double)*N);
+int k[50];
 
 /*string for mettre le */
 char times[10];
@@ -105,7 +110,6 @@ double change;
   for(i = 0;i < N-1;i++){
       printf("le process %d coute %f microsecond \n",i,k[i]);
 }
-  free(k);
 
   return 0;
 }
