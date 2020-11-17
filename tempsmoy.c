@@ -61,8 +61,9 @@ int main(int ac,char *av[]){
                     execlp(C,C,NULL);
                }
 
-               gettimeofday(&t2,NULL);
-               printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
+               printf("ouiiiii\n");
+               //gettimeofday(&t2,NULL);
+               //printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
 
           //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
