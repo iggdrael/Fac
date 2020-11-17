@@ -23,8 +23,17 @@ int main(int ac, char *av[]){
  printf("1: %d\n", gettimeofday(&t1,NULL));
  printf("1: %ld\n", t1.tv_usec);
  
- if (fork() == 0) 
-  execl("/usr/bin/ls", "/usr/bin/ls", NULL);
+  switch(fork()){
+     /*case de erreir*/
+     case -1:perror("prob de fork");exit(0);
+
+     /*case de fils*/
+     case 0:
+        execlp("ls", "ls", NULL);
+        exit(0);
+
+     default :break;
+  }
  
  
  printf("2: %d\n", gettimeofday(&t2,NULL));
