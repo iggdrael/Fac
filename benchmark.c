@@ -14,8 +14,11 @@
 
 int main(int ac, char *av[]){
 
-  printf("test\n");
+  printf("DEBUT test\n");
+  
+  fork();
   system("ls");
-  printf("fin\n");
+  
+  printf("FIN test\n");
 
 }
