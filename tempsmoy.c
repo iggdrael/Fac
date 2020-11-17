@@ -90,27 +90,14 @@ int main(int ac,char *av[]){
       }
     }
   int cr;
-  printf("zizou\n");
     while(wait(&cr) != -1);
-  printf("raoe\n");
-
-  double change;
-
-  /*on mettre le sequence en croissante*/
-    for(i = 0;i < N-1;i++){
-      for(int j = i+1;j < N;j++){
-          if(k[i] < k[j]){
-            change = k[i];
-            k[i] = k[j];
-            k[j] = change;
-          }
-      }
-    }
 
   /*on affiche les resultata*/
-    for(i = 0;i < N-1;i++){
-        printf("le process %d coute %d microsecond \n",i,k[i]);
+    putchar('[');
+    for(i = 0; i < N; i++){
+        printf("%d, ", i, k[i]);
   }
+  printf("]\n");
 
   return 0;
 }
