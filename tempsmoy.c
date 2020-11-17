@@ -15,9 +15,10 @@
 
 int main(int ac,char *av[]){
 
-  int K;
-  int N;
-  char C[50];
+  /* on fait executer K fois C par N processus */
+  int K;        /* Nombre d'executions */
+  int N;        /* Nombre de processus */
+  char C[50];   /* Commande */
   
   if ( ac != 4 ){
     fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
@@ -27,86 +28,89 @@ int main(int ac,char *av[]){
   sscanf(av[2], "%s", C);
   sscanf(av[3], "%d", &N);
 
-/*creer le pipe*/
-int tube[2];
-pipe(tube);
+  /*creer le pipe*/
+  int tube[2];
+  pipe(tube);
 
-/*creer string for lire le resultat de fils*/
-char lireresultat[10];
+  /*creer string for lire le resultat de fils*/
+  char lireresultat[10];
 
-/*creer le tableau de resultat*/
-int k[50];
+  /*creer le tableau de resultat*/
+  int k[50];
 
-/*string for mettre le */
-char times[10];
+  /*string for mettre le */
+  char times[10];
 
-struct timeval t1,t2;
+  struct timeval t1,t2;
 
-double timeuse;
+  double timeuse;
 
-int i = 0;
+  int i;
 
-  for(;i < N;i++){
-    switch(fork()){
-      /*case de erreir*/
-      case -1:printf("prob de fork");exit(0);
+    for(i=0; i < N; i++){
+      switch(fork()){
+        /*case de erreir*/
+        case -1:perror("prob de fork");exit(0);
 
-      /*case de fils*/
-      case 0:
+        /*case de fils*/
+        case 0:
 
-              gettimeofday(&t1,NULL);
+              //  gettimeofday(&t1,NULL);
 
-              for(int k = 0;k<K;k++){
-                  execlp(C,C,NULL);
-             }
+                for(int k = 0;k<K;k++){
+                    execlp(C,C,NULL);
+               }
 
-             gettimeofday(&t2,NULL);
+           //    gettimeofday(&t2,NULL);
 
-            timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
+          //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
-            timeuse/=K;//calculer le temps moyen
+          //    timeuse/=K;//calculer le temps moyen
 
-            sprintf(times,"%2lf",timeuse);
+          //    sprintf(times,"%2lf",timeuse);
 
-             close(tube[0]);
+          //     close(tube[0]);
 
-             /*envoyer a process pere par tube*/
-             write(tube[1],times,10);
+               /*envoyer a process pere par tube*/
+         //      write(tube[1],times,10);
 
-             close(tube[1]);
+        //close(tube[1]);
 
-             exit(0);
+               exit(0);
 
 
-      default :
-            close(1);
+        default :
+             // close(1);
 
-            read(tube[0],&lireresultat,10);
+            //  read(tube[0],&lireresultat,10);
 
-            sscanf(lireresultat,"%d",&k[i]);
+           //   sscanf(lireresultat,"%d",&k[i]);
 
-            close(tube[0]);
+            //  close(tube[0]);
+      }
     }
-  }
-  while(wait(NULL) != -1);
+  int cr;
+  printf("zizou\n");
+    while(wait(&cr) != -1);
+  printf("raoe\n");
 
-double change;
+  double change;
 
-/*on mettre le sequence en croissante*/
-  for(i = 0;i < N-1;i++){
-    for(int j = i+1;j < N;j++){
-        if(k[i] < k[j]){
-          change = k[i];
-          k[i] = k[j];
-          k[j] = change;
-        }
+  /*on mettre le sequence en croissante*/
+    for(i = 0;i < N-1;i++){
+      for(int j = i+1;j < N;j++){
+          if(k[i] < k[j]){
+            change = k[i];
+            k[i] = k[j];
+            k[j] = change;
+          }
+      }
     }
-  }
 
-/*on affiche les resultata*/
-  for(i = 0;i < N-1;i++){
-      printf("le process %d coute %d microsecond \n",i,k[i]);
-}
+  /*on affiche les resultata*/
+    for(i = 0;i < N-1;i++){
+        printf("le process %d coute %d microsecond \n",i,k[i]);
+  }
 
   return 0;
 }
