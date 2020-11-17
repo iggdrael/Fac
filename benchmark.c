@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 #define ECHEC -1
 #define SUCCES 0
