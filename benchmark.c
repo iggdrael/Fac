@@ -17,7 +17,12 @@ int N;
 char C[50];
 
 int main(int ac, char *av[]){
+ struct timeval t1;
+ printf("1: %d\n", gettimeofday(&t1,NULL));
  execlp("ls", "ls", NULL);
+ printf("2: %d\n", gettimeofday(&t1,NULL));
+
+ //execlp("ls", "ls", NULL);
  /* int i;
   int pid[2];
   int tab[50];
