@@ -25,12 +25,11 @@ int main(int ac, char *av[]){
  
  execl("ls", "ls", NULL);
  
- printf("\n\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n");
  
  printf("2: %d\n", gettimeofday(&t1,NULL));
  printf("2: %ld\n", t2.tv_usec);
         
- printf("\n\nzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\n\n");
+ printf("\nLa commande a mit %d ms à s'executer\n", t2.tv_usec-t1.tv_usec);
 
 
 
