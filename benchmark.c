@@ -19,6 +19,7 @@ char C[50];
 int main(int ac, char *av[]){
   int i;
   int pid[2];
+  int tab[50];
 
   if ( ac != 4 ){
     fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
@@ -34,19 +35,13 @@ int main(int ac, char *av[]){
         printf("Erreur fork\n");
         exit(STOP);
       case 0:
-        //printf("Coucou\n");
-        break;
-      default:
-        printf("Coucou\n");
-        break;
+        exit(i);
     }
    // kill(getpid(), SIGQUIT);
   }
-/*
+  
   int cr;
-
-  while (wait(&cr) != -1) 
-    if (cr != 0) 
+  while (wait(&cr) != -1)  
       for (i = 0 ; i < N ; i++)
-        kill(pid[i], SIGQUIT);*/
+        tab[i] = cr;
 }
