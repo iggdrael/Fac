@@ -22,7 +22,7 @@ int main(int ac, char *av[]){
 
   if ( ac != 3 ){
     fprintf(stderr, "usage : %s <K> <C> <N>\n", av[0]);
-    exit(−1);
+    exit(STOP);
   }
   sscanf(av[1], "%d", &K);
   sscanf(av[2], "%s", C);
