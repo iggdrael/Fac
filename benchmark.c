@@ -27,12 +27,7 @@ int main(int ac, char *av[]){
   sscanf(av[1], "%d", &K);
   sscanf(av[2], "%s", C);
   sscanf(av[3], "%d", &N);
-  
-  printf("%d ", K);
-  printf("%s ", C);
-  printf("%d\n", N);
 
-  /*
   for (int i = 0 ; i < N ; i++) {
     switch(pid[i] = fork()) {
       case -1:
@@ -45,12 +40,11 @@ int main(int ac, char *av[]){
         break;
     }
   }
-
+/*
   int cr;
 
   while (wait(&cr) != -1) 
     if (cr != 0) 
       for (i = 0 ; i < N ; i++)
-        kill(pid[i], SIGQUIT);
-*/
+        kill(pid[i], SIGQUIT);*/
 }
