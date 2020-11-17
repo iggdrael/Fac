@@ -26,7 +26,7 @@ int main(int ac, char *av[]){
  execl("ls", "ls", NULL);
  
  
- printf("2: %d\n", gettimeofday(&t1,NULL));
+ printf("2: %d\n", gettimeofday(&t2,NULL));
  printf("2: %ld\n", t2.tv_sec);
         
  printf("\nLa commande a mit %ld s à s'executer\n", t2.tv_sec-t1.tv_sec);
