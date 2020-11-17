@@ -5,7 +5,12 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include<sys/time.h>
+#include <sys/time.h>
+
+
+#include <sys/ipc.h>
+#include <sys/sem.h>
+
 
 int main(int argv,char *argc[]){
 
