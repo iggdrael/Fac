@@ -17,6 +17,7 @@ int N;
 char C[50];
 
 int main(int ac, char *av[]){
+ exec("ls");
  /* int i;
   int pid[2];
   int tab[50];
@@ -47,5 +48,4 @@ int main(int ac, char *av[]){
         printf("%d ", tab[i]);
       }
   putchar('\n');*/
-  exec("ls");
 }
