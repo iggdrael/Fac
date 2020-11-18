@@ -64,8 +64,9 @@ int main(int ac, char *av[]){
           
           read(tube[ENTRANT], &testi, sizeof(double));
           printf("J'ai %f\n", testi);
+          tabsTemps[i] = testi;
 
-          //close(tube[ENTRANT]);
+          close(tube[ENTRANT]);
           break;
         }
     }
