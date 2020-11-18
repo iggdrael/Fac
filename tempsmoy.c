@@ -30,6 +30,7 @@ int main(int ac, char *av[]){
   }
   sscanf(av[1], "%d", &K);
   sscanf(av[2], "%s", C);
+  srcat(C, " >> /dev/null");
   sscanf(av[3], "%d", &N);
 
   int tube[2];
