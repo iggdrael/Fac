@@ -30,10 +30,16 @@ int main(int ac, char *av[]){
 
   int tube[2];
   pipe(tube);
-  double tabTemps[200];
+
   struct timeval T0, T1;
-  double Ti, testi;
+  double Ti;
   int i, cr;
+  
+  double *tabTemps = malloc(sizeof(double) * N);
+  if (!tabTemps){
+    perror("Problème Malloc\n");
+    exit(ERREUR);
+  }
 
     for(i=0; i < N; i++){
       switch(fork()){
@@ -61,11 +67,7 @@ int main(int ac, char *av[]){
 
         default:
           close(tube[SORTANT]);
-          
-          read(tube[ENTRANT], &testi, sizeof(double));
-          printf("J'ai %f\n", testi);
-          tabTemps[i] = testi;
-
+          read(tube[ENTRANT], &(tabTemps[i]), sizeof(double));
           close(tube[ENTRANT]);
           break;
         }
@@ -73,10 +75,11 @@ int main(int ac, char *av[]){
 
 
   putchar('[');
-  for(i = 0; i < N*K; i++){
+  for(i = 0; i < N; i++){
       printf("%f, ", tabTemps[i]);
   }
   printf("]\n");
-
+  
+  free(tabTemps);
   return 0;
 }
