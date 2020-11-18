@@ -30,19 +30,11 @@ int main(int ac,char *av[]){
 
   int tube[2];
   pipe(tube);
-
-
-  char lireresultat[10];
-
-
   int k[50];
-
   char times[10];
-
-  struct timeval t1,t2;
-
-  double timeuse;
-
+  char lireresultat[10];
+  struct timeval T0, T1;
+  double Ti;
   int i;
 
     for(i=0; i < N; i++){
@@ -54,48 +46,44 @@ int main(int ac,char *av[]){
       
         case 0:
           
-                gettimeofday(&t1,NULL);
-                for(int j = 0; j < K; j++)
-                  system(C);
-                 
-                gettimeofday(&t2,NULL);
-                  
-                printf("\nLe processus %d a mit %ld ms à s'executer\n", getpid(), t2.tv_usec-t1.tv_usec);
-                
+          gettimeofday(&T0, NULL);
+          for(int j = 0; j < K; j++)
+            system(C);
 
-          //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
+          gettimeofday(&T1, NULL);                
 
-          //    timeuse/=K;//calculer le temps moyen
+          Ti = T1.tv_sec - T0.tv_sec + (T1.tv_usec - T0.tv_usec) / 1000000.0;
+          Ti /= K;
 
-          //    sprintf(times,"%2lf",timeuse);
 
-          //     close(tube[0]);
+          sprintf(times,"%2lf",timeuse);
 
-               /*envoyer a process pere par tube*/
-         //      write(tube[1],times,10);
+          close(tube[0]);
 
-        //close(tube[1]);
+          write(tube[1],times,10);
 
-               exit(0);
+          close(tube[1]);
+
+          exit(0);
 
 
         default :break;
-             // close(1);
+          close(1);
 
-            //  read(tube[0],&lireresultat,10);
+          read(tube[0], &lireresultat, 10);
 
-           //   sscanf(lireresultat,"%d",&k[i]);
+          sscanf(lireresultat,"%d", &k[i]);
 
-            //  close(tube[0]);
+          close(tube[0]);
       }
     }
   int cr;
-    while(wait(&cr) != -1);
+  while(wait(&cr) != -1);
 
 
-    putchar('[');
-    for(i = 0; i < N; i++){
-        printf("%d, ", k[i]);
+  putchar('[');
+  for(i = 0; i < N; i++){
+      printf("%d, ", k[i]);
   }
   printf("]\n");
 
