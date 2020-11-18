@@ -37,7 +37,7 @@ int main(int ac, char *av[]){
   pipe(tube);
 
   struct timeval T0, T1;
-  double Ti, Tsortant;
+  double Ti, Tsortant, resMediane;
   int i, cr;
   
   double *tabTemps = malloc(sizeof(double) * N);
@@ -69,11 +69,9 @@ int main(int ac, char *av[]){
 
         exit(0);
 
-
       default:
         close(tube[SORTANT]);
         read(tube[ENTRANT], &Tsortant, sizeof(double));
-        printf("J'ai %f\n", Tsortant);
         tabTemps[i] = Tsortant;
         close(tube[ENTRANT]);
         break;
@@ -88,6 +86,13 @@ int main(int ac, char *av[]){
   }
   printf("]\n");
   
+  resMediane = tabTemps[N / 2];
+  if (N % 2 == 0)
+    resMediane +=  tabTemps[N / 2 - 1];
+    resMediane /= 2;
+  }
+  
+  printf("Le temps d’execution moyen de %s est de %d s\n", av[2], resMediane);
   
   free(tabTemps);
   return 0;
