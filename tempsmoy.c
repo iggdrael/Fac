@@ -32,7 +32,7 @@ int main(int ac, char *av[]){
   pipe(tube);
 
   struct timeval T0, T1;
-  double Ti;
+  double Ti, Tsortant;
   int i, cr;
   
   double *tabTemps = malloc(sizeof(double) * N);
@@ -67,7 +67,9 @@ int main(int ac, char *av[]){
 
         default:
           close(tube[SORTANT]);
-          read(tube[ENTRANT], &(*(tabTemps + i)), sizeof(double));
+          read(tube[ENTRANT], &Tsortant, sizeof(double));
+          printf("J'ai %f\n", Tsortant);
+          tabTemps[i] = Tsortant;
           close(tube[ENTRANT]);
           break;
         }
