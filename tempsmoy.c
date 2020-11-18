@@ -40,7 +40,6 @@ int main(int ac, char *av[]){
         case -1:
           perror("Erreur fork\n");
           exit(ECHEC);
-
       
         case 0:
          // close(tube[ENTRANT]);
@@ -60,30 +59,20 @@ int main(int ac, char *av[]){
           exit(0);
 
 
-        default :break;
+        default:
           
-         /* printf("oui\n");
+         printf("oui\n");
           close(tube[SORTANT]);
           
           read(tube[ENTRANT], &testi, sizeof(double));
           printf("J'ai %f\n", testi);
-*/
-         // sscanf(lireresultat,"%ld", &tabTemps);
 
-         // close(tube[ENTRANT]);*/
+         // sscanf(testi,"%ld", &tabTemps);
+
+         close(tube[ENTRANT]);
+         break;
       }
     }
-
- // while(wait(&cr) != -1);
-  for (i = 0; i < N*K; i++){
-    close(tube[SORTANT]);
-
-    read(tube[ENTRANT], &testi, sizeof(double));
-    printf("J'ai %f\n", testi);
-    //sscanf(lireresultat,"%ld", &tabTemps);
-
-    close(tube[ENTRANT]);
-  }
 
 
   putchar('[');
