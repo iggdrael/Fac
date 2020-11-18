@@ -58,10 +58,11 @@ int main(int ac,char *av[]){
                gettimeofday(&t1,NULL);
 
                 for(int k = 0;k<K;k++){
-                    execlp(C,C,NULL);
+                    //execlp(C,C,NULL);
+                  system(C);
                }
 
-               printf("ouiiiii\n");
+           
                //gettimeofday(&t2,NULL);
                //printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
 
