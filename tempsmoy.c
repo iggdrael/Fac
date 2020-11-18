@@ -56,7 +56,7 @@ int main(int ac,char *av[]){
           Ti /= K;
 
 
-          sprintf(times,"%2lf",timeuse);
+          sprintf(times, "%2lf", Ti);
 
           close(tube[0]);
 
