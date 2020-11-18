@@ -42,7 +42,7 @@ int main(int ac, char *av[]){
           exit(ECHEC);
       
         case 0:
-         // close(tube[ENTRANT]);
+          close(tube[ENTRANT]);
 
           gettimeofday(&T0, NULL);
           for(int j = 0; j < K; j++)
@@ -62,12 +62,10 @@ int main(int ac, char *av[]){
         default:
           close(tube[SORTANT]);
           
-          read(tube[ENTRANT], &(tabTemps[i]), sizeof(double));
-         // printf("J'ai %f\n", testi);
+          read(tube[ENTRANT], &testi, sizeof(double));
+          printf("J'ai %f\n", testi);
 
-         
-
-          close(tube[ENTRANT]);
+          //close(tube[ENTRANT]);
           break;
         }
     }
