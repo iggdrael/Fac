@@ -60,18 +60,16 @@ int main(int ac, char *av[]){
 
 
         default:
-          
-         printf("oui\n");
           close(tube[SORTANT]);
           
           read(tube[ENTRANT], &testi, sizeof(double));
-          printf("J'ai %f\n", testi);
+         // printf("J'ai %f\n", testi);
 
-         // sscanf(testi,"%ld", &tabTemps);
+          sscanf(testi,"%ld", &(tabTemps[i]));
 
-         close(tube[ENTRANT]);
-         break;
-      }
+          close(tube[ENTRANT]);
+          break;
+        }
     }
 
 
