@@ -59,12 +59,22 @@ int main(int ac, char *av[]){
 
         gettimeofday(&T0, NULL);
         for(int j = 0; j < K; j++)
-          system(C);
+          cr = system(C);
 
         gettimeofday(&T1, NULL);                
 
         Ti = (T1.tv_sec - T0.tv_sec) + ((T1.tv_usec - T0.tv_usec) / 1000000.0);
         Ti /= K;
+	
+	if(cr) {
+		if (WIFSIGNALED(cr)) {
+			printf("Fils %i : SIGNAL : %d\n", WTERMSIG(cr));
+		} else {
+			printf("Fils %i : INTERRUPT : CR : %d\n", cr);
+		}
+
+		Ti = -cr;
+	}
 
         write(tube[i][SORTANT], &Ti, sizeof(double));
         close(tube[i][SORTANT]);
