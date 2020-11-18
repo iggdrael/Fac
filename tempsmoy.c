@@ -32,7 +32,7 @@ int main(int ac,char *av[]){
   pipe(tube);
   int k[50];
   char times[10];
-  char lireresultat[10];
+  char tabTemps[10];
   struct timeval T0, T1;
   double Ti;
   int i;
@@ -45,7 +45,8 @@ int main(int ac,char *av[]){
 
       
         case 0:
-          
+          close(tube[ENTRANT]);
+
           gettimeofday(&T0, NULL);
           for(int j = 0; j < K; j++)
             system(C);
@@ -55,26 +56,20 @@ int main(int ac,char *av[]){
           Ti = T1.tv_sec - T0.tv_sec + (T1.tv_usec - T0.tv_usec) / 1000000.0;
           Ti /= K;
 
-
-          sprintf(times, "%2lf", Ti);
-
-          close(tube[0]);
-
-          write(tube[1],times,10);
-
-          close(tube[1]);
+ 					write(tube[SORTANT], &Ti, sizeof(double));
+          close(tube[SORTANT]);
 
           exit(0);
 
 
         default :break;
-          close(1);
+          close(tube[SORTANT]);
+          
+          read(tube[ENTRANT], &tabTemps, sizeof(double));
 
-          read(tube[0], &lireresultat, 10);
+          //sscanf(lireresultat,"%d", &k[i]);
 
-          sscanf(lireresultat,"%d", &k[i]);
-
-          close(tube[0]);
+          close(tube[ENTRANT]);
       }
     }
   int cr;
@@ -82,8 +77,8 @@ int main(int ac,char *av[]){
 
 
   putchar('[');
-  for(i = 0; i < N; i++){
-      printf("%d, ", k[i]);
+  for(i = 0; i < N*K; i++){
+      printf("%d, ", tabTemps[i]);
   }
   printf("]\n");
 
