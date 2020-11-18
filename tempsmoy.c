@@ -33,7 +33,7 @@ int main(int ac,char *av[]){
   double tabTemps[200];
   struct timeval T0, T1;
   double Ti, testi;
-  int i;
+  int i, cr;
 
     for(i=0; i < N; i++){
       switch(fork()){
@@ -61,6 +61,7 @@ int main(int ac,char *av[]){
 
 
         default :break;
+          wait(&cr);
           printf("oui\n");
           /*close(tube[SORTANT]);
           
@@ -72,8 +73,8 @@ int main(int ac,char *av[]){
           close(tube[ENTRANT]);*/
       }
     }
-  int cr;
-  while(wait(&cr) != -1);
+
+ // while(wait(&cr) != -1);
 
 
   putchar('[');
