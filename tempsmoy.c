@@ -77,7 +77,7 @@ int main(int ac,char *av[]){
 
   putchar('[');
   for(i = 0; i < N*K; i++){
-      printf("%ld, ", tabTemps[i]);
+      printf("%f, ", tabTemps[i]);
   }
   printf("]\n");
 
