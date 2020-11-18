@@ -73,7 +73,7 @@ int main(int ac, char *av[]){
         close(tube[SORTANT]);
         read(tube[ENTRANT], &Tsortant, sizeof(double));
         tabTemps[i] = Tsortant;
-        printf("T%d : %f s\n", Tsortant);
+        printf("T%d : %f s\n", i, Tsortant);
         close(tube[ENTRANT]);
         break;
       }
