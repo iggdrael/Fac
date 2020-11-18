@@ -54,15 +54,14 @@ int main(int ac,char *av[]){
       
         case 0:
           
-                for(int j = 0; j < K; j++){
-                  gettimeofday(&t1,NULL);
-                  
+                gettimeofday(&t1,NULL);
+                for(int j = 0; j < K; j++)
                   system(C);
+                 
+                gettimeofday(&t2,NULL);
                   
-                  gettimeofday(&t2,NULL);
-                  
-                  printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
-                }
+                printf("\nLe processus %d a mit %ld ms à s'executer\n", getpid(), t2.tv_usec-t1.tv_usec);
+                
 
           //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
