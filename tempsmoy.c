@@ -67,7 +67,7 @@ int main(int ac, char *av[]){
 
         default:
           close(tube[SORTANT]);
-          read(tube[ENTRANT], &(tabTemps[i]), sizeof(double));
+          read(tube[ENTRANT], &(*(tabTemps + i)), sizeof(double));
           close(tube[ENTRANT]);
           break;
         }
