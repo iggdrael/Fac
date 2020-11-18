@@ -33,12 +33,14 @@ int main(int ac, char *av[]){
   strcat(C, " >> /dev/null");
   sscanf(av[3], "%d", &N);
 
-  int tube[2];
-  pipe(tube);
-
   struct timeval T0, T1;
   double Ti, Tsortant, resMediane;
   int i, cr;
+  
+  int tube[N][2];
+	for(i = 0; i < N; i++) {
+		pipe(tube[i]);
+	}
   
   double *tabTemps = malloc(sizeof(double) * N);
   if (!tabTemps){
@@ -64,17 +66,16 @@ int main(int ac, char *av[]){
         Ti = (T1.tv_sec - T0.tv_sec) + ((T1.tv_usec - T0.tv_usec) / 1000000.0);
         Ti /= K;
 
-        write(tube[SORTANT], &Ti, sizeof(double));
-        close(tube[SORTANT]);
-        wait(&cr);
+        write(tube[i][SORTANT], &Ti, sizeof(double));
+        close(tube[i][SORTANT]);
         exit(0);
 
       default:
-        close(tube[SORTANT]);
-        read(tube[ENTRANT], &Tsortant, sizeof(double));
+        close(tube[i][SORTANT]);
+        read(tube[i][ENTRANT], &Tsortant, sizeof(double));
         tabTemps[i] = Tsortant;
         printf("T%d : %f s\n", i, Tsortant);
-        close(tube[ENTRANT]);
+        close(tube[i][ENTRANT]);
         break;
       }
   }
