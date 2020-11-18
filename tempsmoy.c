@@ -86,10 +86,10 @@ int main(int ac, char *av[]){
         close(tube[i][SORTANT]);
         read(tube[i][ENTRANT], &Tsortant, sizeof(double));
         tabTemps[i] = Tsortant;
-	if (Tsortant > 0)
+	if (Tsortant > 0){
         	printf("T%d : %f s\n", i, Tsortant);
-	else
 		varTrue = 1;
+	}
         close(tube[i][ENTRANT]);
         break;
       }
