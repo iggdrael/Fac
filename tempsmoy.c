@@ -37,7 +37,7 @@ int main(int ac, char *av[]){
 
   struct timeval T0, T1;
   double Ti, Tsortant, resMediane;
-  int i, cr;
+  int i, cr, varTrue = 0;
   
   int tube[N][2];
 	for(i = 0; i < N; i++) {
@@ -86,7 +86,10 @@ int main(int ac, char *av[]){
         close(tube[i][SORTANT]);
         read(tube[i][ENTRANT], &Tsortant, sizeof(double));
         tabTemps[i] = Tsortant;
-        printf("T%d : %f s\n", i, Tsortant);
+	if (Tsortant > 0)
+        	printf("T%d : %f s\n", i, Tsortant);
+	else
+		varTrue = 1;
         close(tube[i][ENTRANT]);
         break;
       }
@@ -94,20 +97,22 @@ int main(int ac, char *av[]){
 
   qsort(tabTemps, N, sizeof(double), f_sort);
 
-  putchar('[');
-  for(i = 0; i < N; i++){
-      printf("%f, ", tabTemps[i]);
+  if (varTrue == 1){
+	  putchar('[');
+	  for(i = 0; i < N; i++){
+	      printf("%f, ", tabTemps[i]);
+	  }
+	  printf("]\n");
+
+	  resMediane = tabTemps[N / 2];
+	  if (N % 2 == 0){
+	    resMediane +=  tabTemps[N / 2 - 1];
+	    resMediane /= 2;
+	  }
+
+	  printf("Le temps d'execution moyen de %s est de %f s\n", av[2], resMediane);
   }
-  printf("]\n");
-  
-  resMediane = tabTemps[N / 2];
-  if (N % 2 == 0){
-    resMediane +=  tabTemps[N / 2 - 1];
-    resMediane /= 2;
-  }
-  
-  printf("Le temps d'execution moyen de %s est de %f s\n", av[2], resMediane);
-  
+	
   free(tabTemps);
   return 0;
 }
