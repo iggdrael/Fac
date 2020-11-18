@@ -66,13 +66,14 @@ int main(int ac, char *av[]){
 
         write(tube[SORTANT], &Ti, sizeof(double));
         close(tube[SORTANT]);
-
+        wait(&cr);
         exit(0);
 
       default:
         close(tube[SORTANT]);
         read(tube[ENTRANT], &Tsortant, sizeof(double));
         tabTemps[i] = Tsortant;
+        printf("T%d : %f s\n", Tsortant);
         close(tube[ENTRANT]);
         break;
       }
