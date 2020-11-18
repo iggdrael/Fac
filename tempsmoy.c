@@ -38,7 +38,7 @@ int main(int ac, char *av[]){
   double *tabTemps = malloc(sizeof(double) * N);
   if (!tabTemps){
     perror("Problème Malloc\n");
-    exit(ERREUR);
+    exit(ECHEC);
   }
 
     for(i=0; i < N; i++){
