@@ -87,12 +87,12 @@ int main(int ac, char *av[]){
   printf("]\n");
   
   resMediane = tabTemps[N / 2];
-  if (N % 2 == 0)
+  if (N % 2 == 0){
     resMediane +=  tabTemps[N / 2 - 1];
     resMediane /= 2;
   }
   
-  printf("Le temps d’execution moyen de %s est de %d s\n", av[2], resMediane);
+  printf("Le temps d'execution moyen de %s est de %f s\n", av[2], resMediane);
   
   free(tabTemps);
   return 0;
