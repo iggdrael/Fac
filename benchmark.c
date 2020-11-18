@@ -29,7 +29,7 @@ int main(int ac, char *av[]){
 
      /*case de fils*/
      case 0:
-        execlp("ls", "ls", NULL);
+        system("ls");
         exit(0);
 
      default :break;
