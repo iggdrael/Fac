@@ -56,8 +56,11 @@ int main(int ac,char *av[]){
           
                 for(int j = 0; j < K; j++){
                   gettimeofday(&t1,NULL);
+                  
                   system(C);
+                  
                   gettimeofday(&t2,NULL);
+                  
                   printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
                 }
 
