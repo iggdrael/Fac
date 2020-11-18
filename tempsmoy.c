@@ -61,14 +61,15 @@ int main(int ac,char *av[]){
 
 
         default :break;
-          close(tube[SORTANT]);
+          printf("oui\n");
+          /*close(tube[SORTANT]);
           
           read(tube[ENTRANT], &testi, sizeof(double));
           printf("J'ai %f\n", testi);
 
          // sscanf(lireresultat,"%ld", &tabTemps);
 
-          close(tube[ENTRANT]);
+          close(tube[ENTRANT]);*/
       }
     }
   int cr;
