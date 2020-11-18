@@ -43,7 +43,7 @@ int main(int ac,char *av[]){
 
       
         case 0:
-          close(tube[ENTRANT]);
+         // close(tube[ENTRANT]);
 
           gettimeofday(&T0, NULL);
           for(int j = 0; j < K; j++)
@@ -61,16 +61,16 @@ int main(int ac,char *av[]){
 
 
         default :break;
-          wait(&cr);
+          
           printf("oui\n");
-          /*close(tube[SORTANT]);
+          close(tube[SORTANT]);
           
           read(tube[ENTRANT], &testi, sizeof(double));
           printf("J'ai %f\n", testi);
 
          // sscanf(lireresultat,"%ld", &tabTemps);
 
-          close(tube[ENTRANT]);*/
+         // close(tube[ENTRANT]);*/
       }
     }
 
