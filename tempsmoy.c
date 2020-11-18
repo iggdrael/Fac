@@ -28,17 +28,15 @@ int main(int ac,char *av[]){
   sscanf(av[2], "%s", C);
   sscanf(av[3], "%d", &N);
 
-  /*creer le pipe*/
   int tube[2];
   pipe(tube);
 
-  /*creer string for lire le resultat de fils*/
+
   char lireresultat[10];
 
-  /*creer le tableau de resultat*/
+
   int k[50];
 
-  /*string for mettre le */
   char times[10];
 
   struct timeval t1,t2;
@@ -49,22 +47,19 @@ int main(int ac,char *av[]){
 
     for(i=0; i < N; i++){
       switch(fork()){
-        /*case de erreir*/
-        case -1:perror("prob de fork");exit(0);
+        case -1:
+          perror("Erreur fork\n");
+          exit(ECHEC);
 
-        /*case de fils*/
+      
         case 0:
-
                gettimeofday(&t1,NULL);
 
-                for(int k = 0;k<K;k++){
-                    //execlp(C,C,NULL);
+                for(int j = 0; j < K; j++)
                   system(C);
-               }
 
-           
-               //gettimeofday(&t2,NULL);
-               //printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
+               gettimeofday(&t2,NULL);
+               printf("\nLa commande a mit %ld ms à s'executer\n", t2.tv_usec-t1.tv_usec);
 
           //    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;//calculer le temps
 
@@ -95,7 +90,7 @@ int main(int ac,char *av[]){
   int cr;
     while(wait(&cr) != -1);
 
-  /*on affiche les resultata*/
+
     putchar('[');
     for(i = 0; i < N; i++){
         printf("%d, ", k[i]);
