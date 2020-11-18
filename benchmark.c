@@ -23,18 +23,7 @@ int main(int ac, char *av[]){
  printf("1: %d\n", gettimeofday(&t1,NULL));
  printf("1: %ld\n", t1.tv_usec);
  
-  switch(fork()){
-     /*case de erreir*/
-     case -1:perror("prob de fork");exit(0);
-
-     /*case de fils*/
-     case 0:
-        system("ls");
-        exit(0);
-
-     default :break;
-  }
- 
+ system("ls");
  
  printf("2: %d\n", gettimeofday(&t2,NULL));
  printf("2: %ld\n", t2.tv_usec);
