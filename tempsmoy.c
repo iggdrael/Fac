@@ -13,7 +13,7 @@
 #define ENTRANT 0
 #define SORTANT 1
 
-int main(int ac,char *av[]){
+int main(int ac, char *av[]){
 
   /* on fait executer K fois C par N processus */
   int K;        /* Nombre d'executions */
@@ -56,20 +56,18 @@ int main(int ac,char *av[]){
 
  					write(tube[SORTANT], &Ti, sizeof(double));
           close(tube[SORTANT]);
-          
-          wait(&cr);
 
           exit(0);
 
 
         default :break;
           
-          printf("oui\n");
+         /* printf("oui\n");
           close(tube[SORTANT]);
           
           read(tube[ENTRANT], &testi, sizeof(double));
           printf("J'ai %f\n", testi);
-
+*/
          // sscanf(lireresultat,"%ld", &tabTemps);
 
          // close(tube[ENTRANT]);*/
@@ -77,6 +75,15 @@ int main(int ac,char *av[]){
     }
 
  // while(wait(&cr) != -1);
+  for (i = 0; i < N*K; i++){
+    close(tube[SORTANT]);
+
+    read(tube[ENTRANT], &testi, sizeof(double));
+    printf("J'ai %f\n", testi);
+    //sscanf(lireresultat,"%ld", &tabTemps);
+
+    close(tube[ENTRANT]);
+  }
 
 
   putchar('[');
