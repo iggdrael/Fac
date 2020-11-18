@@ -56,6 +56,8 @@ int main(int ac,char *av[]){
 
  					write(tube[SORTANT], &Ti, sizeof(double));
           close(tube[SORTANT]);
+          
+          wait(&cr);
 
           exit(0);
 
