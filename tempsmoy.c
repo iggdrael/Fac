@@ -55,7 +55,7 @@ int main(int ac, char *av[]){
         exit(ECHEC);
 
       case 0:
-        close(tube[ENTRANT]);
+        close(tube[i][ENTRANT]);
 
         gettimeofday(&T0, NULL);
         for(int j = 0; j < K; j++)
