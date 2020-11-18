@@ -14,7 +14,7 @@
 #define SORTANT 1
 
 int f_sort(const void * a, const void * b) {
-  return *a - *b;
+  return a - b;
 }
 
 int main(int ac, char *av[]){
