@@ -31,8 +31,7 @@ int main(int ac,char *av[]){
   int tube[2];
   pipe(tube);
   int k[50];
-  char times[10];
-  char tabTemps[10];
+  double tabTemps[10];
   struct timeval T0, T1;
   double Ti;
   int i;
@@ -65,9 +64,9 @@ int main(int ac,char *av[]){
         default :break;
           close(tube[SORTANT]);
           
-          read(tube[ENTRANT], &tabTemps, sizeof(double));
+          read(tube[ENTRANT], &(tabTemps[i]), sizeof(double));
 
-          //sscanf(lireresultat,"%d", &k[i]);
+         // sscanf(lireresultat,"%ld", &tabTemps);
 
           close(tube[ENTRANT]);
       }
