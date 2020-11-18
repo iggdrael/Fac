@@ -13,6 +13,10 @@
 #define ENTRANT 0
 #define SORTANT 1
 
+int f_sort(const void * a, const void * b) {
+  return *a - *b;
+}
+
 int main(int ac, char *av[]){
 
   /* on fait executer K fois C par N processus */
@@ -41,46 +45,48 @@ int main(int ac, char *av[]){
     exit(ECHEC);
   }
 
-    for(i=0; i < N; i++){
-      switch(fork()){
-        case -1:
-          perror("Erreur fork\n");
-          exit(ECHEC);
-      
-        case 0:
-          close(tube[ENTRANT]);
+  for(i=0; i < N; i++){
+    switch(fork()){
+      case -1:
+        perror("Erreur fork\n");
+        exit(ECHEC);
 
-          gettimeofday(&T0, NULL);
-          for(int j = 0; j < K; j++)
-            system(C);
+      case 0:
+        close(tube[ENTRANT]);
 
-          gettimeofday(&T1, NULL);                
+        gettimeofday(&T0, NULL);
+        for(int j = 0; j < K; j++)
+          system(C);
 
-          Ti = (T1.tv_sec - T0.tv_sec) + ((T1.tv_usec - T0.tv_usec) / 1000000.0);
-          Ti /= K;
+        gettimeofday(&T1, NULL);                
 
- 					write(tube[SORTANT], &Ti, sizeof(double));
-          close(tube[SORTANT]);
+        Ti = (T1.tv_sec - T0.tv_sec) + ((T1.tv_usec - T0.tv_usec) / 1000000.0);
+        Ti /= K;
 
-          exit(0);
+        write(tube[SORTANT], &Ti, sizeof(double));
+        close(tube[SORTANT]);
+
+        exit(0);
 
 
-        default:
-          close(tube[SORTANT]);
-          read(tube[ENTRANT], &Tsortant, sizeof(double));
-          printf("J'ai %f\n", Tsortant);
-          tabTemps[i] = Tsortant;
-          close(tube[ENTRANT]);
-          break;
-        }
-    }
+      default:
+        close(tube[SORTANT]);
+        read(tube[ENTRANT], &Tsortant, sizeof(double));
+        printf("J'ai %f\n", Tsortant);
+        tabTemps[i] = Tsortant;
+        close(tube[ENTRANT]);
+        break;
+      }
+  }
 
+  qsort(tabTemps, N, sizeof(double), f_sort);
 
   putchar('[');
   for(i = 0; i < N; i++){
       printf("%f, ", tabTemps[i]);
   }
   printf("]\n");
+  
   
   free(tabTemps);
   return 0;
