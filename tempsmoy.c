@@ -62,10 +62,10 @@ int main(int ac, char *av[]){
         default:
           close(tube[SORTANT]);
           
-          read(tube[ENTRANT], &testi, sizeof(double));
+          read(tube[ENTRANT], &(tabTemps[i]), sizeof(double));
          // printf("J'ai %f\n", testi);
 
-          sscanf(testi,"%ld", &(tabTemps[i]));
+         
 
           close(tube[ENTRANT]);
           break;
