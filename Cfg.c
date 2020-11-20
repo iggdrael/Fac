@@ -7,8 +7,8 @@
 #define kuAefColonneMaX 2
 #define kuAefKolonneMaX 26
 #define kuAefLigneMaX 26
-int AEF0[1+kuAefLigneMaX][1+kuAefKolonneMaX][1+kuAefColonneMaX];//AEF0[0][0][0]:=nb lignes de l'AEF A et AEF0[0][1][0]:=' '
-int AEF1[1+kuAefLigneMaX][1+kuAefKolonneMaX][1+kuAefColonneMaX];//AEF1[0][0][0]:=nb lignes de l'AEF Abarre et AEF1[0][1][0]:='{'
+int AEF0[1+kuAefLigneMaX][1+kuAefKolonneMaX][1+kuAefColonneMaX];//AEF0[0][0][0]:=nb lignes de l'AEF original et AEF0[0][1][0]:=' '
+int AEF1[1+kuAefLigneMaX][1+kuAefKolonneMaX][1+kuAefColonneMaX];//AEF1[0][0][0]:=nb lignes de l'AEF cplémté et AEF1[0][1][0]:='{'
 #define kuRegleMaX kE3
 #define kuTermeMaX 50 //peut être important ds les gramR de Greibach
 #define kuVocabulaireMaX 26
@@ -18,12 +18,13 @@ int bCfgAmorceR;
 int nCfgReglE;
 
 void AefComplementeR(int zdAfficher);
-void AefCompleteR(int bAfficher);
+int bAefCompleteR(int bAfficher);
 void AefDecodeR(int zdAfficher,char *sComplementaire);
-void AefDeterminiseR(int zdAfficher);
+int bAefDeterminiseR(int zdAfficher);
+void AefReconnaitrE(int AEF2[][3],char *sMot,int nLettreAuPlus,int bAfficher,int *pnMotReconnu);
 int bAefReconnaitrE(int AEF2[][3],char *sMot);
-void AefReconnaitreTouT(int AEF2[][3],char *sMot,int nLettreAuPlus);
-void AefSimplifieR(int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX],int AEF2[][1+2],int bAfficher);
+void AefReconnaitreTout(int AEF2[][3],int nLettreAuPlus);
+void AefSimplifieR(int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX],int AEF2[][1+2]);
 void AefTabuleR();
 void AefVoiR(char *sQuoi,int AEF2[][1+2]);
 void AefVoirSouS(int bCondition,char *sQuoi,int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX]);
@@ -70,8 +71,8 @@ int bSymboleSupprimeR(int bUnSinonBoucle,int bVoir);
 
 void AefComplementeR(int zdAfficher){
 	AefVoirSouS(zdAfficher,"original",AEF0);
-	AefCompleteR(zdAfficher);
-	AefDeterminiseR(zdAfficher);//actualise AEF1[0][0][0] 
+	bAefCompleteR(zdAfficher);
+	bAefDeterminiseR(zdAfficher);//actualise AEF1[0][0][0] 
 	AefVoirSouS(zdAfficher>1,">>> AVANT complémentation",AEF1);
 	CommentE(zdAfficher,"Pour tout super-état E et toute lettre l, il existe exactement une transition (E,l,…)");
 	CommentE(zdAfficher,"Donc à tout mot m de A* correspond exactement un chemin depuis S");
@@ -84,26 +85,36 @@ void AefComplementeR(int zdAfficher){
 	AefVoirSouS(zdAfficher,"complémenté",AEF1);
 }//AefComplementeR
 
-void AefCompleteR(int zdAfficher){
-	//ajoute une trappe et les transitions vers cette trappe et actualise le nb de lignes AEF0[0][0][0] 
-	const int kuLigneMax=AEF0[0][0][0];
-	int uC,uL,uK,bNul;
+int bAefCompleteR(int idAfficher){
+	//si non complet, ajoute une trappe ainsi que les transitions vers cette trappe. 
+	int uC,bDejaComplet,cPasse,uL,uK,bNul;
 	int uTrappe=kuVocabulaireMaX;
-	for (int nC=0;nC<=kuAefColonneMaX;nC++)
-		AEF0[uTrappe][uTrappe][nC]=1;
-	for (uL=1;uL<=kuLigneMax;uL++)
-		for (uC=1;uC<=kuAefColonneMaX;uC++){
-			for (bNul=1,uK=1;uK<=kuAefKolonneMaX;uK++)
-				bNul=bNul && AEF0[uL][uK][uC]==0;
-			if (bNul)
-				AEF0[uL][uTrappe][uC]=1;
+	//compléter l'AEF uniqt s'il n'est pas déjà complet, en ajoutant une transition vers la trappe pr chq transition manquante
+		for (bDejaComplet=1,cPasse=0;cPasse<=1-bDejaComplet;cPasse++){
+			for (uL=1;uL<=kuAefLigneMaX;uL++)
+				if (AEF0[uL][uL][0])//l'état existe
+					for (uC=1;uC<=kuAefColonneMaX;uC++){
+						for (bNul=1,uK=1;uK<=kuAefKolonneMaX;uK++)
+							bNul=bNul && AEF0[uL][uK][uC]==0;
+						if (bNul)
+							if (cPasse==0)
+								bDejaComplet=0;
+							else AEF0[uL][uTrappe][uC]=1;
+					}
 		}
-	AEF0[0][0][0]=uTrappe;
-	AEF0[0][0][1]=' ';
-	AefVoirSouS(zdAfficher,">>>>>>>> après complétude",AEF0);
-	CommentE(zdAfficher,"Pour tout état e et toute lettre l, il existe au moins une transition (e,l,…)");
-	CommentE(zdAfficher,"Donc à tout mot m de A* correspond au moins un chemin depuis S");
-}//AefCompleteR
+	if (!bDejaComplet){//ajouter un état trappe et en faire une trappe
+		AEF0[uTrappe][uTrappe][0]=1;//ajoute un état trappe, lequel n'est…
+		AEF0[uTrappe][0][0]=0;//…pas un état final.
+		for (int nC=1;nC<=kuAefColonneMaX;nC++)//ajoute ttes les transitions qui…
+			AEF0[uTrappe][uTrappe][nC]=1;		//…vont de la trappe à la trappe.
+	}else if (idAfficher>0)
+		printf("%sL'AEF est déjà complet.\n",sTab0());
+	if (!bDejaComplet)
+		AefVoirSouS(idAfficher,"après complétude",AEF0);
+	CommentE(iSup(0,idAfficher),"Pour tout état e et toute lettre l, il existe au moins une transition (e,l,…)");
+	CommentE(iSup(0,idAfficher),"Donc à tout mot m de A* correspond au moins un chemin depuis S");
+	return(bDejaComplet);
+}//bAefCompleteR
 
 void AefDecodeR(int zdAfficher,char *sComplementaire){
 	//convertit AEF1 en grammaire linéaire à droite, la stocke ds sCfG[] avec ";" final" et ds sComplementaire SANS ";" final".
@@ -142,37 +153,68 @@ void AefDecodeR(int zdAfficher,char *sComplementaire){
 	sComplementaire[nChaineLg(sComplementaire)-1]='\0';//supprime le ";" final
 }//AefDecodeR
 
-void AefDeterminiseR(int zdAfficher){
-	int uL,nC,uC,uK,nEtat;
-	int uAef3LigneMax=1;
-	for (uL=0;uL<=uAef3LigneMax;uL++)
-		for (uC=0;uC<=kuAefColonneMaX;uC++)
-			for (uK=0;uK<=kuAefKolonneMaX;uK++)
-				AEF1[uL][uK][uC]=0;
+int bAefDeterminiseR(int zdAfficher){
+	int bDejaDeterministe,uL,nC,uC,nChoix,uK,nEtat;
+	//AefVoirSouS(1,"AVANT AefDeterminiseR",AEF0);
+	//AEF1:=RAZ
+		for (uL=0;uL<=kuAefLigneMaX;uL++)
+			for (uC=0;uC<=kuAefColonneMaX;uC++)
+				for (uK=0;uK<=kuAefKolonneMaX;uK++)
+					AEF1[uL][uK][uC]=0;
 	//le super état inital de AEF1 est l'état initial de AEF0
 		for (nC=0;nC<=kuAefColonneMaX;nC++)
 			for (uK=1;uK<=kuAefKolonneMaX;uK++)
 				AEF1[1][uK][nC]=AEF0['S'-'@'][uK][nC];
 		AEF1[1][0][0]=AEF0['S'-'@'][0][0];
-	for (uL=1;uL<=uAef3LigneMax;uL++)
-		for (uC=1;uC<=kuAefColonneMaX;uC++)
-			if ( nSuperEtaT(uL,uC,uAef3LigneMax)==0 ) {
-				for (uAef3LigneMax++,uK=1;uK<=kuAefKolonneMaX;uK++)
-					AEF1[uAef3LigneMax][uK][0]=AEF1[uL][uK][uC];
-				for (uK=1;nEtat=AEF1[uL][uK][uC],uK<=kuAefKolonneMaX;uK++)
-					if (nEtat>0){//ajouter les états de AEF0(L,C)
-						for (int uQ=1;uQ<=kuAefKolonneMaX;uQ++)
-							for (int uD=1;uD<=2;uD++)
-								AEF1[uAef3LigneMax][uQ][uD]=iSup(AEF1[uAef3LigneMax][uQ][uD],AEF0[uK][uQ][uD]);
-						AEF1[uAef3LigneMax][0][0]=ySup(AEF1[uAef3LigneMax][0][0],AEF0[uK][0][0]);
-					}
-			}
-	AEF1[0][0][0]=uAef3LigneMax;
-	AEF1[0][1][0]='{';
-	AefVoirSouS(zdAfficher,">>> après déterminisation",AEF1);
-	CommentE(zdAfficher,"Pour tout super-état E et toute lettre l, il existe au plus une transition (E,l,…)");
-	CommentE(zdAfficher,"Donc à tout mot m de A* correspond au plus un chemin depuis S");
-}//AefDeterminiseR
+	//bDejaDeterministe:=déjà déterministe
+		for (bDejaDeterministe=uL=1;uL<=kuAefLigneMaX;uL++)
+			if (AEF0[uL][uL][0])//l'état existe
+				for (uC=1;uC<=kuAefColonneMaX;uC++){
+					for (nChoix=0,uK=1;uK<=kuAefKolonneMaX;uK++)
+						nChoix+=(AEF0[uL][uK][uC]>0);
+					if (nChoix>1)
+						bDejaDeterministe=0;
+				}
+	//le rendre déterministe
+		int uAef3LigneMax=1;//compteur
+		for (uL=1;uL<=uAef3LigneMax;uL++)
+			for (uC=1;uC<=kuAefColonneMaX;uC++)
+				if ( nSuperEtaT(uL,uC,uAef3LigneMax)==0 ) {
+					for (uAef3LigneMax++,uK=1;uK<=kuAefKolonneMaX;uK++)
+						AEF1[uAef3LigneMax][uK][0]=AEF1[uL][uK][uC];
+					for (uK=1;nEtat=AEF1[uL][uK][uC],uK<=kuAefKolonneMaX;uK++)
+						if (nEtat>0){//ajouter les états de AEF0(L,C)
+							for (int uQ=1;uQ<=kuAefKolonneMaX;uQ++)
+								for (int uD=1;uD<=2;uD++)
+									AEF1[uAef3LigneMax][uQ][uD]=iSup(AEF1[uAef3LigneMax][uQ][uD],AEF0[uK][uQ][uD]);
+							AEF1[uAef3LigneMax][0][0]=ySup(AEF1[uAef3LigneMax][0][0],AEF0[uK][0][0]);
+						}
+				}
+		AEF1[0][0][0]=uAef3LigneMax;
+		AEF1[0][1][0]='{';
+	if (zdAfficher>0 && bDejaDeterministe)
+		printf("%sL'AEF est déjà déterministe.\n",sTab0());
+	if (!bDejaDeterministe)
+		AefVoirSouS(zdAfficher,"après déterminisation",AEF1);
+	if (bDejaDeterministe)
+		CommentE(iSup(0,zdAfficher),"Pour tout état e et toute lettre l, il existe au plus une transition (e,l,…)");
+	else CommentE(iSup(0,zdAfficher),"Pour tout super-état E et toute lettre l, il existe au plus une transition (E,l,…)");
+	CommentE(iSup(0,zdAfficher),"Donc à tout mot m de A* correspond au plus un chemin depuis S");
+	CommentE(iSup(0,zdAfficher),"Un AEF à n états déterminisé peut avoir O(2**n) états) et donc un coût exponentiel");
+	return(bDejaDeterministe);
+}//bAefDeterminiseR
+
+void AefReconnaitrE(int AEF2[][3],char *sMot,int nLettreAuPlus,int bAfficher,int *pnMotReconnu){
+	if (bAefReconnaitrE(AEF2,sMot)){
+		*pnMotReconnu=(*pnMotReconnu)+1;
+		if (bAfficher)
+			printf("\n%s%3d: %s",sTab0(),*pnMotReconnu,sG(sMot));
+	}
+	if (nChaineLg(sMot)<nLettreAuPlus){
+		AefReconnaitrE(AEF2,sC2(sMot,"a"),nLettreAuPlus,bAfficher,pnMotReconnu);
+		AefReconnaitrE(AEF2,sC2(sMot,"b"),nLettreAuPlus,bAfficher,pnMotReconnu);
+	}
+}//AefReconnaitreTouT
 
 int bAefReconnaitrE(int AEF2[][3],char *sMot){
 	//vrai ssi l'AEF2 déterministe complet reconnaît le mot sMot
@@ -188,81 +230,102 @@ int bAefReconnaitrE(int AEF2[][3],char *sMot){
 	return(bReconnaitre);
 }//bAefReconnaitrE
 
-void AefReconnaitreTouT(int AEF2[][3],char *sMot,int nLettreAuPlus){
-	if (bAefReconnaitrE(AEF2,sMot))
-		printf("\n%s%s",sTab0(),sG(sMot));
-	if (nChaineLg(sMot)<nLettreAuPlus){
-		AefReconnaitreTouT(AEF2,sC2(sMot,"a"),nLettreAuPlus);
-		AefReconnaitreTouT(AEF2,sC2(sMot,"b"),nLettreAuPlus);
-	}
-}//AefReconnaitreTouT
+void AefReconnaitreTout(int AEF2[][3],int nLettreAuPlus){
+	Assert1("AefReconnaitreTout",bCroit(0,nLettreAuPlus,10));
+	//compter les mots reconnus
+		int nMotReconnu=0;
+		AefReconnaitrE(AEF2,"",nLettreAuPlus,!k1Afficher,&nMotReconnu);
+	Flag(1);
+		if (nMotReconnu){//les afficher
+			Tabuler(-1);
+				printf("%sMots de %s maximum engendrés par cette grammaire (ordre alphabétique croissant):",sTab0(),sPluriel(nLettreAuPlus,"lettre"));
+				Tabuler(+1);
+					nMotReconnu=0;
+					AefReconnaitrE(AEF2,"",nLettreAuPlus,k1Afficher,&nMotReconnu);
+					printf(".\n");
+					int nMotEnTout=zPuissance(2,nLettreAuPlus+1)-1;
+				Tabuler(-1);
+				printf("%s%s plus %s (du langage complémentaire),",sTab0(),sPluriel(nMotReconnu,"mot"),sPluriel(nMotEnTout-nMotReconnu,"mot"));
+				printf(" cela fait %s avec %s.\n",sPluriel(nMotEnTout,"mot$ réalisable$"),sPluriel(nLettreAuPlus,"lettre"));
+			Tabuler(+1);
+		}else printf("%sAucun mot n'est engendré par cette grammaire.\n",sTab0());
+	Flag(0);
+}//AefReconnaitreTout
 
-void AefSimplifieR(int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX],int AEF2[][1+2],int bAfficher){
+void AefSimplifieR(int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX],int AEF2[][1+2]){
 	//transforme l'AEF en 3 dimensions en AEF à 2 dimensions
-	int bPris,uL,nC,uK,nPile[1+kuAefLigneMaX];
+	const int kuStart='S'-'A'+1;
+	int bPris,uL,nC,uK,nPile[1+kuAefLigneMaX];//cf vu +bas
+	Assert1("AefSimplifieR",zPuissance(2,kuVocabulaireMaX)<kuIntegerMax);
 	//AEF2:=AEF;
 		for (AEF2[0][0]=AEF[0][0][0],nPile[0]=0,uL=1;uL<=AEF2[0][0];uL++){
 			for (bPris=0,uK=1;uK<=kuAefKolonneMaX;uK++)
-				bPris=bPris || AEF[uL][uK][0];
-			if (bPris)
+				bPris=bPris || 2*AEF[uL][uK][0];
+			if (bPris)//établir une bijection entre les superétats et les entiers
 				for (nC=0;nC<=kuAefColonneMaX;nC++)
 					for (AEF2[uL][nC]=0,uK=1;uK<=kuAefKolonneMaX;uK++)
 						if (AEF[uL][uK][nC])
-							AEF2[uL][nC]=uK;
+							AEF2[uL][nC]=2*AEF2[uL][nC]+uK;//vu Assert1(), bijection valide car pas d'overflow
 			AEF2[uL][0]=AEF[uL][0][0]>0;
 		}
-		for (nPile[0]=0,nPile[++nPile[0]]=19,uL=1;uL<=AEF2[0][0];uL++)
+	//nPile:=pile des numéros distincts associés aux superétats
+		for (nPile[0]=0,nPile[++nPile[0]]=kuStart,uL=1;uL<=AEF2[0][0];uL++)
 			for (nC=1;nC<=2;nC++)
-				if (!bVecteurContient(AEF2[uL][nC],nPile) )
+				if (!bVecteurContient(AEF2[uL][nC],nPile) ) 
 					nPile[++nPile[0]]=AEF2[uL][nC];
-	//renommer les états dans [1..AEF2[0][0]]
 		//VecteurVoir0("nPile",nPile);
+	//renommer les états dans [1..AEF2[0][0]]
 		for (uL=1;uL<=AEF2[0][0];uL++)
-			for (nC=1;nC<=2;nC++)
-				AEF2[uL][nC]=mVecteurContient(AEF2[uL][nC],nPile,1,nPile[0]);
-	if (bAfficher)
-		AefVoiR("AEF complet déterministe après renumérotation des états",AEF2);
+			for (nC=1;nC<=2;nC++)//2 cases qui ont le mm superentier auront maintenant le mm nouveau petit entier et le superétat…
+				AEF2[uL][nC]=mVecteurContient(AEF2[uL][nC],nPile,1,nPile[0]);//…initial sera numéro 1 car c'est le 1er de nPile[].
 }//AefSimplifieR
 
 void AefTabuleR(){
 	//tabule sCfG ds AEF0[][][]
 	int uL,uK,nC,nDebut,nFin,uP,uR,uSource,udTerminal,uCible;
-	for (uL=1;uL<=kuAefLigneMaX;uL++)
+	for (uL=0;uL<=kuAefLigneMaX;uL++)
 		for (nC=0;nC<=kuAefColonneMaX;nC++)
 			for (uK=0;uK<=kuAefKolonneMaX;uK++)
 				AEF0[uL][uK][nC]=0;
-	for (uR=1;uR<=nCfgReglE;uR++)
-		for (uSource=sCfG[nRegleDebuT(uR)]-'@',AEF0[uSource][uSource][0]=1,uP=1;uP<=nProduitEnTout(uR);uP++){
+	for (uR=1;uR<=nCfgReglE;uR++){
+		uSource=sCfG[nRegleDebuT(uR)]-'@';
+		AEF0[uSource][uSource][0]=1;//ajoute l'état uSource aux états qui existent
+		for (uP=1;uP<=nProduitEnTout(uR);uP++){
 			nDebut=nProduitDebuT(uR,uP);
 			nFin=nProduitFiN(uR,uP);
 			if (nDebut<nFin){
 				udTerminal=sCfG[nDebut]-'a'+1;
 				uCible=sCfG[nFin]-'@';
-				//d3(uSource,udTerminal,uCible);
 				AEF0[uSource][uCible][udTerminal]=1;
-			}else AEF0[uSource][0][0]=1;
+			}else AEF0[uSource][0][0]=1;//état final
 		}
+	}
 	AEF0[0][0][0]=kuAefLigneMaX;
+	//AefVoirSouS(2*k1Afficher,"à la fin de AefTabuleR",AEF0);
 }//AefTabuleR
 
 void AefVoiR(char *sQuoi,int AEF2[][1+2]){
 	int uL,nC;
-	for (printf("%s%s:\n%s      a  b\n",sTab0(),sQuoi,sTab0()),uL=1;uL<=AEF2[0][0];uL++)
-		for (printf("%s%2d:%s",sTab0(),uL,(AEF2[uL][0])?"<=":"  "),nC=1;nC<=2|| bPrint("");nC++)
-			printf ("%2d ",AEF2[uL][nC]);
+	Flag(1);
+		for (printf("%s%s:\n%s%s a   b\n",sTab0(),sQuoi,sTab0(),sE(9)),uL=1;uL<=AEF2[0][0];uL++)
+			for (printf("%s%s%s%c%2d:",sTab0(),sE(2),(AEF2[uL][0])?"<=":"  ",(uL==1)?'>':' ',uL),nC=1;nC<=2|| bPrint("");nC++)
+				printf ("%3d ",AEF2[uL][nC]);
+		printf("%sNoter que l'AEF n'est en général pas minimal en nombre d'états (minimiser un AEF à n états coûte O(nlg(n)).\n",sTab0());
+	Flag(0);
 }//AefVoiR
 
 void AefVoirSouS(int bCondition,char *sQuoi,int AEF[][1+kuAefKolonneMaX][1+kuAefColonneMaX]){
 	if (bCondition){
-		const int kuMarge = 31,kuEmpan = 24;
+		const int kuMarge = 31,kuEmpan = 20,kuTrou=3;
 		const char ksTransition[]="Arc étiqueté",ksQuoi[]="Table associée à l'AEF";
-		int nC,uK,uL,bEtatFinal,nLigne,nFormat,bPris,nPile[1+kuAefKolonneMaX];
+		int nC,uK,uL,bEtatFinal,nLigne,nFormat,bPris,nPile[1+kuAefKolonneMaX],bStart,bSuperEtat=AEF[0][1][0]=='{';
 		ModeCaractere(1);
-			printf("\n%s",sChaine2(ksQuoi,kuMarge));
-			printf("%s%s%s\n",sChaine1("   État",kuEmpan),sChaine1(sC2b(ksTransition,sG("a")),kuEmpan),sChaine1(sC2b(ksTransition,sG("b")),kuEmpan));
-			for (nLigne=0,uL=1;uL<=AEF[0][0][0];uL++){
-				for (bPris=0,uK=1;uK<=kuAefKolonneMaX;uK++)
-					bPris=bPris || AEF[uL][uK][0];
+			printf("\n%s     %s%s",sChaine2(ksQuoi,kuMarge),sChaine1((bSuperEtat)? "Super-état":"État",kuEmpan-4),sE(4));
+			printf("%s%s%s\n",sChaine2(sC2b(ksTransition,sG("a")),kuEmpan),sE(kuTrou),sChaine2(sC2b(ksTransition,sG("b")),kuEmpan));
+			for (nLigne=0,uL=1;uL<=kuAefLigneMaX;uL++){
+				for (bPris=0,uK=1;uK<=kuAefKolonneMaX && !bPris;uK++)
+					bPris=(AEF[uL][uK][0]!=0);
+				//if (bPris) d(uL);
 				if (bPris){
 					printf("%s",(nLigne==0)? sChaine2(sQuoi,kuMarge) : sE(kuMarge));
 					for (nLigne++,nC=0;nC<=kuAefColonneMaX || bPrint("");nC++){
@@ -270,10 +333,18 @@ void AefVoirSouS(int bCondition,char *sQuoi,int AEF[][1+kuAefKolonneMaX][1+kuAef
 							if (AEF[uL][uK][nC])
 								nPile[++nPile[0]]=uK*AEF[uL][uK][nC];
 						bEtatFinal=AEF[uL][0][0]>0;
-						if (nC==0) printf("%s%c%2d ",(bEtatFinal)?"<=":"  ",(nLigne==1)?'>':' ',nLigne); else printf("   ");
-						printf("%s",sChaine1(sListe(nPile,nFormat=AEF[0][1][0]),kuEmpan-4));//-4 pr pouvoir placer "<=" devant
+//if ((nPile[0]>0)) {d(uL);VecteurVoir0("nPile",nPile);}
+						bStart= uL==( (bSuperEtat)? 1 : 19 );
+						// ménager kuTrou caractères pr "<=" suivide ">"
+						if (nC==0) printf("%s%c%2d ",(bEtatFinal)?"<=":"  ",(bStart)?'>':' ',nLigne); else printf("%s",sE(kuTrou));
+						if (nPile[0]>0)
+							if (nC==0)
+								printf("%s",sChaine1(sListe(nPile,nFormat=AEF[0][1][0]),kuEmpan-4));//-4 pr pouvoir placer "<=" devant
+							else printf("%s",sChaine2(sListe(nPile,nFormat=AEF[0][1][0]),kuEmpan));
+							//else printf("%s",sChaine2(sFois(kuEmpan-0,'.'),kuEmpan));
+						else printf("%s",sChaine2(".",kuEmpan));
 					}
-				}
+				};
 			}
 		ModeCaractere(0);
 	}
@@ -302,7 +373,7 @@ int bCfgAlgebriquE(const char *ksgrQuelconque,int bLineaire,int idAfficher){
 				if (idAfficher>1) printf("%sVoici les règles au sens large obtenues après suppression des blancs et des séparateurs du code source:\n",sTab0()); 
 				bAlgebrique=bStart;
 				Flag(0);//ici, même si refait plus bas
-				nBof=nVecteurEcreter(mSymboleAcquis,0,kuRegleMaX,0,kuIntegerMax);
+				nVecteurEcreter(mSymboleAcquis,0,kuRegleMaX,0,kuIntegerMax);
 				if (idAfficher>0){
 					CfgVoiR("Grammaire algébrique",bDetailler);
 					if (bDetailler)
@@ -316,7 +387,7 @@ int bCfgAlgebriquE(const char *ksgrQuelconque,int bLineaire,int idAfficher){
 						printf("\n");
 					};
 				}
-			//Tabuler(-1);
+			Tabuler(-1);
 		if (bDetailler) Flag(0);
 	}
 	return(bAlgebrique);
@@ -370,30 +441,42 @@ int bCfgCompacteR(const char *ksNonCompact){
 	return(bCompacter);
 }//bCfgCompacteR
 
-void CfgComplementer(const char *ksgrLineaireAhDroite,int zdAfficher,char *szgrComplementaire){
-	//rend dans szgrComplementaire la grammaire complémentaire de ksgrLineaireAhDroite ou affiche un message d'erreur si non défini.
+void CfgComplementer(const char *ksgrLineaireAhDroite,int nLettreAuPlus,int zdAfficher,char *szgrComplementaire){
+	//rend ds szgrComplementaire la grammaire complémentaire de ksgrLineaireAhDroite ou affiche un message d'erreur si non défini.
+	//si affichage détaillé et nLettreAuPlus>0, affiche les mots engendrés par ksgrLineaireAhDroite et ceux du complémentaire
 	char sComplementaire[kE4];
 	int bDetailler=zdAfficher>1;
+	int bMotLister=bDetailler && nLettreAuPlus>0;
 	Assert1("CfgComplementer",bCroit(0,zdAfficher,2) );
-	if ( bCfgLineaireAhDroite(ksgrLineaireAhDroite,!k1Afficher) ){
-		CfgVoiR("Grammaire linéaire G",!k1Detailler);
-		if (zdAfficher>0)
-			printf("%sG est linéaire à droite et A={a,b}. Donc le complémentaire de G par rapport à A* est calculable par AEF.\n",sTab0());
-		if (bDetailler){
-			Flag(1);
-				printf("%sLe Start est le seul point d'entrée de G. Donc l'AEF associé a un seul état initial: S.\n",sTab0());
-			Flag(0);
-		}
-		AefTabuleR();//stocke sCfG dans AEF0 
-		AefComplementeR(zdAfficher);//rend le complément de AEF0 dans AEF1
-		AefDecodeR(zdAfficher,sComplementaire);//stocke AEF1 ds sComplementaire
-		int bAlgebriquer=bCfgAlgebriquE(sComplementaire,k1Lineaire,!k1Afficher);
-		Assert1("CfgComplementer9",bAlgebriquer);
-		Tabuler(-1);
-		CfgVoiR("Grammaire complémentaire",!k1Detailler);
-		if (szgrComplementaire!=NULL)
-			szgrComplementaire=sChaineCopie(sCfG);
-	}
+	int bGld=bCfgLineaireAhDroite(ksgrLineaireAhDroite,zdAfficher);
+	if ( bGld ){
+		if (bMotLister){
+			Tabuler(-1);
+				CfgReconnaitre(ksgrLineaireAhDroite,nLettreAuPlus,-zdAfficher);
+			Tabuler(-1);
+		}else {Tabuler(+1);CfgVoiR("Grammaire linéaire G",!k1Detailler);Tabuler(-1);}
+		Tabuler(+1);
+			if (zdAfficher>0)
+				printf("%sG est linéaire à droite et A={a,b}. Donc le complémentaire de G par rapport à A* est calculable par AEF.\n",sTab0());
+			if (bDetailler){
+				Flag(1);
+					printf("%sLe Start est le seul point d'entrée de G. Donc l'AEF associé à G a un seul état initial: S.\n",sTab0());
+				Flag(0);
+			}
+			AefTabuleR();//stocke sCfG dans AEF0 
+			AefComplementeR(zdAfficher);//rend le complément de AEF0 dans AEF1
+			AefDecodeR(zdAfficher,sComplementaire);//stocke AEF1 ds sComplementaire
+			int bAlgebriquer=bCfgAlgebriquE(sComplementaire,k1Lineaire,!k1Afficher);
+			Assert1("CfgComplementer9",bAlgebriquer);
+			CfgVoiR("Grammaire complémentaire",zdAfficher);
+			if (bMotLister){
+				Tabuler(-1);
+					CfgReconnaitre(sComplementaire,nLettreAuPlus,zdAfficher);
+				Tabuler(-1);
+			}
+			if (szgrComplementaire!=NULL)
+				szgrComplementaire=sChaineCopie(sCfG);
+	}else bCfgLineaireAhDroite(ksgrLineaireAhDroite,k1Afficher);
 }//CfgComplementer
 
 void CfgDecycleR(int zdAfficher){
@@ -767,18 +850,19 @@ int bCfgLineaireAhDroitE(const char *ksGrAlgebrique){
 	return(bOk);
 }//bCfgLineaireAhDroitE
 
-int bCfgLineaireAhDroite(const char *ksgrLineaireAhDroite,int nLettreAuPlus){
+int bCfgLineaireAhDroite(const char *ksgrLineaireAhDroite,int tAfficher){
 	//Rend vrai ssi c'est une gld. Si nLettreAuPlus est >0, affiche la gramR et la teste avec ts les mots de lgr<=nLettreAuPlus.
-	if (nLettreAuPlus>0){
+	if (tAfficher){
 		Tabuler(+1);
-			printf("%sGrammaire proposée:\n",sTab0());
+			printf("%sGrammaire%s:\n",sTab0(),(tAfficher<0)?" à complémenter":"");
 			printf("%s%s%s.\n",sTab0(),sTab0(),sG(ksgrLineaireAhDroite));
 		Tabuler(-1);
 	}
 	int bLineaireAhDroite=bCfgAlgebriquE(ksgrLineaireAhDroite,k1Lineaire,-k1Afficher) && bCfgLineaireAhDroitE(ksgrLineaireAhDroite);
-	if (nLettreAuPlus>0){
-		printf("%sCette grammaire %s linéaire à droite.\n",sTab0(),sEst(bLineaireAhDroite));
-		//CfgLineaireTesteR(ksgrLineaireAhDroite,nLettreAuPlus,!k1Afficher);
+	if (!bLineaireAhDroite){
+		Tabuler(+1);
+			printf("%sCette grammaire %s linéaire à droite.\n",sTab0(),sEst(bLineaireAhDroite));
+		Tabuler(-1);
 	}
 	return(bLineaireAhDroite);
 }//bCfgLineaireAhDroite
@@ -1135,45 +1219,57 @@ void CfgQuasiGreibacheR(int zdAfficher){
 	//ds(2,sCfG);
 }//CfgQuasiGreibacheR
 
-void CfgReconnaitre(const char *ksgrLineaireAhDroite,int nLettreAuPlus,int zdAfficher){
+void CfgReconnaitre(const char *ksgrLineaireAhDroite,int nLettreAuPlus,int idAfficher){
 	//Génère l'AEF complet déterministe associé à ksgrLineaireAhDroite et énumère les mots reconnus qui ont nLettreAuPlus. 
 	int AEF2[1+26][3];
-	int bDetailler=zdAfficher>1;
-	Assert1("CfgReconnaitre",bCroit(0,zdAfficher,2) );
-	if ( bCfgLineaireAhDroite(ksgrLineaireAhDroite,k1Afficher) ){
-		CfgVoiR("Grammaire linéaire G",!k1Detailler);
-		if (zdAfficher>0)
-			printf("%sG est linéaire à droite et A={a,b}. Donc les mots engendrés par G peuvent être reconnus par un AEF.\n",sTab0());
-		if (bDetailler){
-			Flag(1);
-				printf("%sLe Start est le seul point d'entrée de G. Donc l'AEF associé a un seul état initial: S.\n",sTab0());
-				AefTabuleR();//stocke sCfG dans AEF0
-			Flag(0);
-		}
-		if (zdAfficher)
-			AefVoirSouS(zdAfficher,"avant transformation",AEF0);
-		AefCompleteR(zdAfficher);
-		AefDeterminiseR(zdAfficher);//actualise AEF1[0][0][0] 
-		if (zdAfficher)
-			AefVoirSouS(zdAfficher>1,"déterministe et complet",AEF1);
-		AefSimplifieR(AEF1,AEF2,zdAfficher>1);
-		//Tabuler(+1);
-			printf("%sMots engendrés par cette grammaire:",sTab0());
-			Tabuler(+1);
-				AefReconnaitreTouT(AEF2,"",nLettreAuPlus);
-				printf(".\n");
-			Tabuler(-1);
+	int zdAfficher=abs(idAfficher);
+	int bDetailler=abs(idAfficher)>1;
+	Assert1("CfgReconnaitre",bCroit(0,abs(idAfficher),2) );
+	if ( bCfgLineaireAhDroite(ksgrLineaireAhDroite,iSup(0,idAfficher)) ){
+		Tabuler(+1);
+			CfgVoiR("Grammaire linéaire G",!k1Detailler);
+			if (idAfficher>0)
+				printf("%sG est linéaire à droite et A={a,b}. Donc les mots engendrés par G peuvent être reconnus par un AEF.\n",sTab0());
+			if (bDetailler){
+				Flag(1);
+					printf("%sLe Start est le seul point d'entrée de G. Donc l'AEF associé à G a un seul état initial: S.\n",sTab0());
+					AefTabuleR();//stocke sCfG dans AEF0
+				Flag(0);
+			}else AefTabuleR();//stocke sCfG dans AEF0
+			if (zdAfficher)
+				AefVoirSouS(idAfficher,"avant transformation",AEF0);
+			int bDejaComplet=bAefCompleteR(idAfficher);
+			int bDejaDeterministe=bAefDeterminiseR(idAfficher);//actualise AEF1[0][0][0] 
+			int bDito=bDejaComplet && bDejaDeterministe;
+			if (zdAfficher)
+				if (bDito)
+					printf("%sL'AEF, déjà complet et déterministe, ne change pas.\n",sTab0());
+				else AefVoirSouS(zdAfficher>1,"déterministe et complet",AEF1);
+			if (zdAfficher>0){
+				if (bDito)
+					CommentE(zdAfficher,"Pour tout état e et toute lettre l, il existe exactement 1 transition (e,l,…)");
+				else CommentE(zdAfficher,"Pour tout super-état E et toute lettre l, il existe exactement 1 transition (E,l,…)");
+				CommentE(zdAfficher,"Donc à tout mot m de A* correspond exactement un chemin unique d'origine S");
+			}
+			AefSimplifieR(AEF1,AEF2);
+			if (bDetailler) Ligne(); 
+			if (bDetailler)
+				AefVoiR(sC2b("AEF complet déterministe après renommage", (bDito)? "éventuel des états":"des super-états"),AEF2);
+			if (bDetailler) 
+				CfgVoiR("Conversion de l'automate de l'AEF en grammaire",!k1Detailler);
+			AefReconnaitreTout(AEF2,nLettreAuPlus);
 		Tabuler(-1);
 	}
 }//CfgReconnaitre
 
 void CfgTESTER(int iTest){
 	//teste le présent module
-	iTest=100;//13
+	iTest=301;//304
 	int zdAfficher=1;
 	Appel0(sC2("CfgTESTER,test n°",sEnt(iTest)));
 		Assert1("CfgTESTER",bCfgAmorceR);
-		switch (iTest) {//tPropre0Quasi1Greibach2
+//d(iTest);
+		if (1) switch (iTest) {//tPropre0Quasi1Greibach2
 			case 11:bCfgNormaliser("S->aT+a+Tb+b;T->a+b",k1Algebrique,1,zdAfficher,NULL);break;
 			case 12:bCfgNormaliser("S->aT+a+Tb+b;T->a+b",k1Algebrique,2,zdAfficher,NULL);break;
 			case 13:bCfgNormaliser("S->aT+a+Tb+b;T->a+b",k1Algebrique,3,zdAfficher,NULL);break;
@@ -1192,14 +1288,16 @@ void CfgTESTER(int iTest){
 					break;
 			case 43:bCfgPropreR("S->aT+Tb;T->a+b+1+1",!k1Dito,k1Afficher,NULL);
 					break;
-			case 50:CfgComplementer("S->aT+bT+aU;T->aS+1;U->bU+aS+1",k1Afficher+k1Detailler,NULL);break;
-			case 51:CfgComplementer("S->aT;T->1",k1Afficher+k1Detailler,NULL);break;
+			case 50:CfgComplementer("S->aT+bT+aU;T->aS+1;U->bU+aS+1",0,k1Afficher+k1Detailler,NULL);break;
+			case 51:CfgComplementer("S->aT;T->1",k1Afficher+k1Detailler,0,NULL);break;
 			case 60:CfgGreibacheR("S->SSa+Tb;T->Sb+Ta+b",!k1Poursuivre,k1Tout,0,NULL);break;
 
-			case 100:CfgReconnaitre("S->aT;T->bU;U->1",4,k1Afficher+k1Detailler);break;
-			case 101:bCfgLineaireAhDroite("S->1+aV+bV+aA+bA+bB;A->aV;B->bV;V->1",4);break;
-			case 102:bCfgLineaireAhDroite("S->aT+bT;T->aU+bU;U->aV+bV+aU+bU;V->1",4);break;
+			case 100:CfgReconnaitre("S->aB+bC+1;B->aB+bB+1;C->aD+bE+1;D->aD+bD;E->aD+bE+1",4,2*k1Afficher);break;
+			case 101:bCfgLineaireAhDroite("S->1+aV+bV+aA+bA+bB;A->aV;B->bV;V->1",k1Afficher);break;
+			case 102:bCfgLineaireAhDroite("S->aT+bT;T->aU+bU;U->aV+bV+aU+bU;V->1",k1Afficher);break;
 
+			case 201:CfgReconnaitre("S->aT;T->bV;V->1",4,k1Afficher+k1Detailler);break;//L=ab
+			case 301:CfgComplementer("S->aT;T->bV;V->1",4,k1Afficher+k1Detailler,NULL);break;//L=ab
 			default:Assert1("CfgTESTER default",0);
 		}
 	Appel1(sC2("CfgTESTER,test n°",sEnt(iTest)));
