@@ -110,7 +110,7 @@ int main (int argc, const char * argv[]) {
 	Appel0("");//NE PAS TOUCHER; ce code doit toujours être placé ici, au début du main
 		ModuleAmorceR();//NE PAS TOUCHER; ce code doit toujours suivre immédiatement Appel0("")
 		//CfgTESTER(0);
-		Tp4TESTER(1);
+		Tp4TESTER(11);
 	Appel1("");//NE PAS TOUCHER; ce code doit toujours être placé ici, à la fin du main, juste avant le return()
     return 0;
 }//main
