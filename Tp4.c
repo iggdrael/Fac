@@ -1,6 +1,7 @@
 #include "Kit.h"
 #include "Cfg.h"
 #include "Tp4.h"
+#include "Graphe.h"
 int bTp4AmorceR;//ie le module a effectivement été amorcé
 
 void Tp4AMORCER(){
@@ -13,7 +14,7 @@ void Tp4TESTER(int iTest){
 	Appel0(sC2("Tp4TESTER,test n°",sEnt(iTest)));
 		switch (iTest) {
 			case 11:	bCfgLineaireAhDroite("S->aT; T->1", 1);
-						CfgReconnaitre("S->aT; T->1", 1);//L11=b;break
+						CfgReconnaitre("S->aT; T->1", 1, 1);//L11=b;break
 			case 12:	//L12=mots de 2 lettres sauf le mot bb;
 			case 13:	//L13=mots qui n'ont pas de a
 			case 14:	//L14=mots de 3 lettres ou plus
